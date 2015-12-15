@@ -9,5 +9,11 @@
 
 <!-- Templates -->
 <template name="leaderboard">
-	<p>Hello world!</p>
+	<ul>
+		{{#each player}}
+		<li class="player {{selectedClass}}">
+			{{name}}: {{score}}
+		</li>
+		{{/each}}
+	</ul>
 </template>
