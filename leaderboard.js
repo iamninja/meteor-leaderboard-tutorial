@@ -27,28 +27,23 @@ if (Meteor.isClient) {
     },
     'click .increment': function() {
       var selectedPlayer = Session.get('selectedPlayer');
-      PlayerList.update({ _id: selectedPlayer }, { $inc: { score: 5 } });
+      Meteor.call('updateScore', selectedPlayer, 5);
     },
     'click .decrement': function() {
       var selectedPlayer = Session.get('selectedPlayer');
-      PlayerList.update({ _id: selectedPlayer }, { $inc: { score: -5 } });
+      Meteor.call('updateScore', selectedPlayer, -5);
     },
     'click .remove': function() {
       var selectedPlayer = Session.get('selectedPlayer');
-      PlayerList.remove({ _id: selectedPlayer });
+      Meteor.call('removePlayer', selectedPlayer);
     }
   });
 
   Template.addPlayerForm.events({
     'submit form': function(event) {
       event.preventDefault();
-      var currentUserId = Meteor.userId();
       var playerNameVar = event.target.playerName.value;
-      PlayerList.insert({
-        name: playerNameVar,
-        score: 0,
-        createdBy: currentUserId
-      });
+      Meteor.call('createPlayer', playerNameVar);
       event.target.playerName.value = "";
     }
   });
@@ -63,3 +58,38 @@ if (Meteor.isServer) {
   });
 
 }
+
+Meteor.methods({
+  'createPlayer': function(playerNameVar) {
+    check(playerNameVar, String);
+    var currentUserId = Meteor.userId();
+    if (currentUserId) {
+      PlayerList.insert({
+        name: playerNameVar,
+        score: 0,
+        createdBy: currentUserId
+      });
+    } else {
+      console.log('You must login first.');
+    };
+  },
+  'removePlayer': function(selectedPlayer) {
+    check(selectedPlayer, String);
+    var currentUserId = Meteor.userId();
+    if (currentUserId) {
+      PlayerList.remove({ _id: selectedPlayer, createdBy: currentUserId });
+    } else {
+      console.log('You must login first.');
+    };
+  },
+  'updateScore': function(selectedPlayer, value) {
+    check(selectedPlayer, String);
+    check(value, Number);
+    var currentUserId = Meteor.userId();
+    if (currentUserId) {
+      PlayerList.update({ _id: selectedPlayer, createdBy: currentUserId }, { $inc: { score: value } });
+    } else {
+      console.log('You must login first.');
+    };
+  }
+});
