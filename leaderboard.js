@@ -52,8 +52,14 @@ if (Meteor.isClient) {
       event.target.playerName.value = "";
     }
   });
+
+  Meteor.subscribe('thePlayers');
 }
 
 if (Meteor.isServer) {
+  Meteor.publish('thePlayers', function() {
+    var currentUserId = this.userId;
+    return PlayerList.find({ createdBy: currentUserId });
+  });
 
 }
