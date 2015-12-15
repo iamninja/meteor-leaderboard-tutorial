@@ -4,12 +4,17 @@
 <body>
 	<h1>Leaderboard</h1>
 
-	{{> addPlayerForm}}
-	{{> leaderboard}}
+	{{> loginButtons}}
+	{{#if currentUser}}
+		{{> leaderboard}}
+	{{else}}
+		<p>Login or register to create to Leaderboard!</p>
+	{{/if}}
 </body>
 
 <!-- Templates -->
 <template name="leaderboard">
+	{{> addPlayerForm}}
 	<ul>
 		{{#each player}}
 		<li class="player {{selectedClass}}">
